@@ -1,31 +1,53 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Iterator;
+import java.util.Vector;
 
 import static java.lang.Thread.sleep;
 //游戏绘制类
-public class GamePanel extends JPanel implements Runnable{
+public class GamePanel extends JPanel implements Runnable, KeyListener {
     PlayTank playerTank;//定义玩家类
 
     public GamePanel() {
-        playerTank = new PlayTank(500,400);//初始化玩家类
+        playerTank = new PlayTank(500,400,0);//初始化玩家类
         System.out.println("游戏面板初始化成功！");
     }
 
     public void paint(Graphics g) {
         //===================绘制游戏背景颜色============
-        g.setColor(Color.LIGHT_GRAY);
+        g.setColor(Color.GRAY);
         g.fillRect(0, 0, 1000, 620);
         //============================================0
+        drawTank(g,1,playerTank);
+        //==================绘制玩家子弹================
+        //遍历玩家的子弹集合，若有子弹则绘制
+        synchronized (playerTank.getBullets()) {
+            Iterator<Bullet> it = playerTank.getBullets().iterator();
+            while (it.hasNext()) {
+                Bullet bullet = it.next();
+                if (bullet.getLive()) {
+                    drawBullet(g,1,bullet);
+                }else {
+                    it.remove();
+                }
+            }
+        }
 
 
     }
+    //==============================绘制坦克=========================================
+    //绘制坦克，首先获取x，y，p用于区分玩家与ai坦克,d表示玩家坦克朝向（东南西北）,1表示玩家坦克，2表示ai坦克
+    public void drawTank(Graphics g,int p,Tank tank) {
+        int x = tank.getX();
+        int y = tank.getY();
+        int direction = tank.getDirection();
 
-    //绘制坦克，首先获取x，y，p用于区分玩家与ai坦克,d表示玩家坦克朝向（东南西北）
-    public void drawPlayerTank(int x,int y,Graphics g,int p,int direction) {
         switch (p) {
             case 1:
-                //======蓝色表示玩家坦克======
-                g.setColor(Color.BLUE);
+                //======黄色表示玩家坦克======
+                g.setColor(Color.YELLOW);
                 break;
             case 2:
                 //======红色表示ai坦克======
@@ -66,6 +88,67 @@ public class GamePanel extends JPanel implements Runnable{
                 break;
             default:
         }
+    }
+
+    //==========================绘制子弹==================================
+    //p用于区分ai坦克与玩家坦克的子弹
+    public void drawBullet(Graphics g,int p,Bullet bullet) {
+        //选择子弹类型
+        switch (p) {
+            case 1:
+                g.setColor(Color.YELLOW);
+                break;
+            case 2:
+                g.setColor(Color.RED);
+                break;
+        }
+        g.fillOval(bullet.getX() - 5,bullet.getY() - 5,5,5);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W:
+                playerTank.setDirection(0);
+                if(playerTank.getY() >  0) {
+                    playerTank.moveUP();
+                }
+                break;
+            case KeyEvent.VK_S:
+                playerTank.setDirection(2);
+                if(playerTank.getY() < 710) {
+                    playerTank.moveDOWN();
+                }
+                break;
+            case KeyEvent.VK_A:
+                playerTank.setDirection(3);
+                if(playerTank.getX() > 0) {
+                    playerTank.moveLEFT();
+                }
+                break;
+            case KeyEvent.VK_D:
+                playerTank.setDirection(1);
+                if(playerTank.getX() < 1000) {
+                    playerTank.moveRIGHT();
+                }
+                break;
+            case KeyEvent.VK_J:
+                playerTank.PlayShot();
+                break;
+        }
+
+        repaint();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 
     @Override
