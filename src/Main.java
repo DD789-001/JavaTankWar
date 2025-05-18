@@ -9,8 +9,9 @@ public class Main extends JFrame {
         this.add(gp);
         this.setTitle("Tank War");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//使退出按钮响应程序关闭事件
-        this.setSize(1000, 618+150);//多出来的150用于操控界面以及分数记录
+        this.setSize(1000, 618);
         this.setVisible(true);
+        this.setResizable(false);
     }
 
     public static void main(String[] args) {
