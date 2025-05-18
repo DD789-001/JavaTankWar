@@ -21,8 +21,6 @@ public class GamePanel extends JPanel implements Runnable{
         //============================================0
 
 
-
-
     }
 
     public void drawPlayerTank(Graphics g) {
