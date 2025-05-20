@@ -26,15 +26,43 @@ public class Bullet extends MoableObject implements Runnable{
         isLive = live;
     }
 
+    //判断是否击中坦克的方法
+    public Boolean isHitTank(Tank tank){
+        if((this.getX() >= tank.getPoint01().x) && (this.getY() <= tank.getPoint01().y) && (this.getX() <= tank.getPoint04().x) && (this.getY() >= tank.getPoint04().y)){
+            this.isLive = false;
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     @Override
     public void run(){
         while(isLive){
             try {
                 moveDirection(direction);
+                OutOfBounds();
                 sleep(time);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
+        System.out.println("子弹线程结束");
+    }
+
+    public void OutOfBounds(){
+        if(getX() < 0){
+            System.out.println("子弹销毁了");
+            setLive(false);
+        }else if(getX() > 1000){
+            System.out.println("子弹销毁了");
+            setLive(false);
+        }else if(getY() < 0){
+            System.out.println("子弹销毁了");
+            setLive(false);
+        }else if(getY() > 620){
+            System.out.println("子弹销毁了");
+            setLive(false);
         }
     }
 

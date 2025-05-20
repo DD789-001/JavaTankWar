@@ -4,22 +4,57 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Iterator;
 import java.util.Vector;
+/*
+* 0北1东2南3西
+* 大小1000*620
+* */
 
 import static java.lang.Thread.sleep;
 //游戏绘制类
 public class GamePanel extends JPanel implements Runnable, KeyListener {
     PlayTank playerTank;//定义玩家类
 
+
     public GamePanel() {
-        playerTank = new PlayTank(500,400,0);//初始化玩家类
+        playerTank = new PlayTank(960,540,0);//初始化玩家类
         System.out.println("游戏面板初始化成功！");
+        for(int i = 0; i < AiTank.size; i++) {
+            AiTank.getAiTanks().add(new AiTank((40 + i * 100), 50, 2));
+        }
     }
 
     public void paint(Graphics g) {
         //===================绘制游戏背景颜色============
         g.setColor(Color.GRAY);
         g.fillRect(0, 0, 1000, 620);
-        //============================================0
+        //================绘制游戏地图==================
+        //================绘制Ai坦克===================
+        synchronized (AiTank.getAiTanks()) {
+            Iterator<AiTank> it = AiTank.getAiTanks().iterator();
+            while (it.hasNext()) {
+                AiTank aiTank = it.next();
+                //遍历玩家的子弹集合，判断是否被玩家的子弹击中
+                synchronized (PlayTank.getBullets()){
+                    Iterator<Bullet> bit = PlayTank.getBullets().iterator();
+                    while (bit.hasNext()) {
+                        Bullet bullet = bit.next();
+                        if(bullet.isHitTank(aiTank)) aiTank.setLive(false);
+                        if(!bullet.getLive()){
+                            bit.remove();
+                        }
+                    }
+                }
+                //判断坦克是否存活，若死亡则从集合中删除
+                if (aiTank.getLive()) {
+                    //存活则绘制
+                    drawTank(g,2,aiTank);
+                }else {
+                    //死亡则移除
+                    it.remove();
+                }
+            }
+        }
+        //===================绘制玩家坦克=====================0
         drawTank(g,1,playerTank);
         //==================绘制玩家子弹================
         //遍历玩家的子弹集合，若有子弹则绘制
@@ -30,6 +65,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 if (bullet.getLive()) {
                     drawBullet(g,1,bullet);
                 }else {
+                    //若子弹生命为false则移除
+                    System.out.println("子弹移除了");
                     it.remove();
                 }
             }
@@ -157,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         while(true) {
             repaint();
             try {
-                sleep(2);
+                sleep(1);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
