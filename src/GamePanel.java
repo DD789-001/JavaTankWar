@@ -19,7 +19,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         playerTank = new PlayTank(960,540,0);//初始化玩家类
         System.out.println("游戏面板初始化成功！");
         for(int i = 0; i < AiTank.size; i++) {
-            AiTank.getAiTanks().add(new AiTank((40 + i * 100), 50, 2));
+            AiTank aiTank = new AiTank((40 + i * 100), 50, 2);
+            AiTank.getAiTanks().add(aiTank);
+            aiTank.getPlayTank(playerTank);
+            new Thread(aiTank).start();
         }
     }
 

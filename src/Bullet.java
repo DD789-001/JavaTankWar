@@ -28,7 +28,7 @@ public class Bullet extends MoableObject implements Runnable{
 
     //判断是否击中坦克的方法
     public Boolean isHitTank(Tank tank){
-        if((this.getX() >= tank.getPoint01().x) && (this.getY() <= tank.getPoint01().y) && (this.getX() <= tank.getPoint04().x) && (this.getY() >= tank.getPoint04().y)){
+        if((this.getX() >= (tank.getX() - 20)) && (this.getY() <= (tank.getY() + 30)) && (this.getX() <= (tank.getX() + 20)) && (this.getY() >= (tank.getY() - 30))){
             this.isLive = false;
             return true;
         }else {

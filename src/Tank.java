@@ -15,6 +15,7 @@ public class Tank extends MoableObject implements RectangleDemo {
     ArrayList<Point> points = new ArrayList<>();
     //=======================
     private int direction = 0;//设置默认方向
+
     private int speed = 4;//设置默认速度
 
     public Tank(int x, int y,int direction) {
@@ -90,5 +91,9 @@ public class Tank extends MoableObject implements RectangleDemo {
 
     public Point getPoint04() {
         return point04;
+    }
+
+    public int getSpeed() {
+        return speed;
     }
 }

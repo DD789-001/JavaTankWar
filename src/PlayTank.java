@@ -1,5 +1,4 @@
 import java.util.Vector;
-
 public class PlayTank extends Tank {
     static Vector<PlayTank> PlayTanks = new Vector<>();//用Vector类存储玩家坦克类（单机一般就一个）
     private static Vector<Bullet> PlayBullets = new Vector<>();//用于存储玩家发射出的子弹
@@ -21,4 +20,5 @@ public class PlayTank extends Tank {
         PlayBullets.add(bullet);
         new Thread(bullet).start();
     }
+
 }
