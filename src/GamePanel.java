@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 /*
@@ -13,24 +14,29 @@ import static java.lang.Thread.sleep;
 //游戏绘制类
 public class GamePanel extends JPanel implements Runnable, KeyListener {
     PlayTank playerTank;//定义玩家类
-
+    Record playerRecord;//定义玩家记录类
+    private ArrayList<Explosion> explosions = new ArrayList<>();
 
     public GamePanel() {
         playerTank = new PlayTank(960,540,0);//初始化玩家类
+        playerRecord = new Record();
         System.out.println("游戏面板初始化成功！");
-        for(int i = 0; i < AiTank.size; i++) {
-            AiTank aiTank = new AiTank((40 + i * 100), 50, 2);
-            AiTank.getAiTanks().add(aiTank);
-            aiTank.getPlayTank(playerTank);
-            new Thread(aiTank).start();
-        }
+        createAiTank();
     }
 
     public void paint(Graphics g) {
         //===================绘制游戏背景颜色============
         g.setColor(Color.GRAY);
         g.fillRect(0, 0, 1000, 620);
+        g.setColor(Color.white);
+        g.fillRect(0,620,1000,200);
         //================绘制游戏地图==================
+        //================绘制玩家得分==================
+        // 设置字体（Arial、加粗、24号）
+        g.setColor(Color.black);
+        g.setFont(new Font("Dialog", Font.BOLD, 24));
+        String news = "玩家得分： " + playerRecord.getKillCount();
+        g.drawString(news,10,640);
         //================绘制Ai坦克===================
         synchronized (AiTank.getAiTanks()) {
             Iterator<AiTank> it = AiTank.getAiTanks().iterator();
@@ -52,6 +58,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                     //存活则绘制
                     drawTank(g,2,aiTank);
                 }else {
+                    playerRecord.setKillCount(1);
+                    explosions.add(new Explosion(aiTank));
                     //死亡则移除
                     it.remove();
                 }
@@ -74,9 +82,24 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 }
             }
         }
-
+        //=================绘制爆炸效果==================
+        drawExplosions(g);
+        //============补充ai坦克=======================
+        if(AiTank.getAiTanks().isEmpty())createAiTank();
+    }
+    public synchronized void drawExplosions(Graphics g) {
+        // 绘制所有爆炸效果
+        for (int i = 0; i < explosions.size(); i++) {
+            Explosion e = explosions.get(i);
+            if (e.isAlive()) {
+                e.draw(g);
+            } else {
+                explosions.remove(i--); // 移除已完成的爆炸
+            }
+        }
 
     }
+
     //==============================绘制坦克=========================================
     //绘制坦克，首先获取x，y，p用于区分玩家与ai坦克,d表示玩家坦克朝向（东南西北）,1表示玩家坦克，2表示ai坦克
     public void drawTank(Graphics g,int p,Tank tank) {
@@ -144,6 +167,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         }
         g.fillOval(bullet.getX() - 5,bullet.getY() - 5,5,5);
     }
+    //==================创建ai坦克================================
+    public void createAiTank() {
+        for(int i = 0; i < AiTank.size; i++) {
+            AiTank aiTank = new AiTank((40 + i * 100), 50, 2);
+            AiTank.getAiTanks().add(aiTank);
+            aiTank.getPlayTank(playerTank);
+            new Thread(aiTank).start();
+        }
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -197,7 +229,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         while(true) {
             repaint();
             try {
-                sleep(1);
+                sleep(5);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

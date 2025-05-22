@@ -4,7 +4,7 @@ import java.util.Vector;
 import static java.lang.Thread.sleep;
 
 public class AiTank extends Tank implements Runnable{
-    static int size = 4;//设置Vector大小，即场上坦克存在数量的最大值
+    static int size = 6;//设置Vector大小，即场上坦克存在数量的最大值
     static Vector<AiTank> aiTanks = new Vector<>();//创建Vector存储ai坦克对象，保证线程安全
     private Boolean isLive = true;
     private static final int UPDATE_INTERVAL = 200; // AI决策间隔(毫秒)
@@ -35,13 +35,13 @@ public class AiTank extends Tank implements Runnable{
     //aiTank自动向玩家寻路
     private void calculateMovement() {
         setSpeed(1);
-        int time = 20;
+        int time = 15;//控制移动速度
         Random rand = new Random();
         int direction = rand.nextInt(4);//0,1,2,3
         int xDistanceBefore = Math.abs(getX() - target.getX());//ai坦克与玩家x轴上的距离
         int yDistanceBefore = Math.abs(getY() - target.getY());//ai坦克与玩家y轴上的距离
 
-        int count = rand.nextInt(200) + 20; //[5,15)
+        int count = rand.nextInt(300) + 20; //[5,15)
         //0北1东2南3西
         switch (direction) {
             case 0://向上
@@ -99,9 +99,6 @@ public class AiTank extends Tank implements Runnable{
             default:
                 break;
         }
-
-
-
     }
 
     @Override

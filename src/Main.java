@@ -11,7 +11,7 @@ public class Main extends JFrame {
         this.addKeyListener(gp);
         this.setTitle("Tank War");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//使退出按钮响应程序关闭事件
-        this.setSize(1000, 618);
+        this.setSize(1000, 718);
         this.setVisible(true);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
