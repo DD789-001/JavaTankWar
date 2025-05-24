@@ -2,6 +2,7 @@ import java.util.Vector;
 public class PlayTank extends Tank {
     static Vector<PlayTank> PlayTanks = new Vector<>();//用Vector类存储玩家坦克类（单机一般就一个）
     private static Vector<Bullet> PlayBullets = new Vector<>();//用于存储玩家发射出的子弹
+    private static Boolean PlayerLive = true;
     private Boolean alive = true;
 
     public PlayTank(int x, int y,int direction) {
@@ -30,4 +31,11 @@ public class PlayTank extends Tank {
         this.alive = alive;
     }
 
+    public static Boolean getPlayerLive() {
+        return PlayerLive;
+    }
+
+    public static void setPlayerLive(Boolean playerLive) {
+        PlayerLive = playerLive;
+    }
 }

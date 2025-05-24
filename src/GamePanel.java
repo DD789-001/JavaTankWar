@@ -1,7 +1,9 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
@@ -13,11 +15,16 @@ import java.util.Vector;
 import static java.lang.Thread.sleep;
 //游戏绘制类
 public class GamePanel extends JPanel implements Runnable, KeyListener {
+    //===============唐诗曼波头像加载============="/resource/唐诗曼波头像.jpg"
+    Image img = getImg("/resource/唐诗曼波头像.jpg");
+    //==============耄耋头像加载===================
+    Image img01 = getImg("/resource/耄耋头像.jpg");
     PlayTank playerTank;//定义玩家类
     Record playerRecord;//定义玩家记录类
     private ArrayList<Explosion> explosions = new ArrayList<>();
 
     public GamePanel() {
+        AudioPlayer.playBGM();
         playerTank = new PlayTank(960,540,0);//初始化玩家类
         playerRecord = new Record();
         System.out.println("游戏面板初始化成功！");
@@ -57,6 +64,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 if (aiTank.getLive()) {
                     //存活则绘制
                     drawTank(g,2,aiTank);
+                    if (img01 != null) {
+                        g.drawImage(img01, aiTank.getX() - 10, aiTank.getY() - 10, 20, 20, this);
+                    }
                 }else {
                     playerRecord.setKillCount(1);
                     explosions.add(new Explosion(aiTank));
@@ -67,6 +77,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         }
         //===================绘制玩家坦克=====================0
         drawTank(g,1,playerTank);
+        if (img != null) {
+            g.drawImage(img, playerTank.getX() - 12, playerTank.getY() - 12, 25, 25, this);
+        }
         //==================绘制玩家子弹================
         //遍历玩家的子弹集合，若有子弹则绘制
         synchronized (playerTank.getBullets()) {
@@ -211,6 +224,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 }
                 break;
             case KeyEvent.VK_J:
+                AudioPlayer.playShot();
                 playerTank.PlayShot();
                 break;
         }
@@ -236,4 +250,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    public Image getImg(String filePath) {
+        Image img; // 从资源目录加载[7](@ref)
+        {
+            try {
+                img = ImageIO.read(getClass().getResourceAsStream(filePath));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        ImageIcon icon = new ImageIcon(img);
+        return icon.getImage();
+    }
 }

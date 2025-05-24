@@ -9,6 +9,7 @@ public class AiTank extends Tank implements Runnable{
     private Boolean isLive = true;
     private static final int UPDATE_INTERVAL = 200; // AI决策间隔(毫秒)
     private PlayTank target;
+    private Vector<Bullet> bullets;//aiTank发射出的子弹集合
 
 
     public AiTank(int x, int y,int direction) {
