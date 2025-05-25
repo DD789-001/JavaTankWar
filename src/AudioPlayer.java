@@ -14,7 +14,6 @@ public class AudioPlayer {
         playWA(fileName02);
     }
 
-
     public static void playWAV(String filePath) {
         try {
             // 从资源文件夹加载音频文件

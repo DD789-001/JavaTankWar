@@ -9,12 +9,25 @@ public class AiTank extends Tank implements Runnable{
     private Boolean isLive = true;
     private static final int UPDATE_INTERVAL = 200; // AI决策间隔(毫秒)
     private PlayTank target;
-    private Vector<Bullet> bullets;//aiTank发射出的子弹集合
-
+    private Vector<Bullet> aiTankBullets = new Vector<>();//aiTank发射出的子弹集合
 
     public AiTank(int x, int y,int direction) {
         super(x, y, direction);
         aiTanks.add(this);
+    }
+    //aiTank射击
+//    public void aiTankShot() {
+//        int count = new Random().nextInt(2);
+//        if (count == 1) {
+//            Bullet bullet = new Bullet(getX(), getY());
+//            bullet.setDirection(getDirection());
+//            aiTankBullets.add(bullet);
+//            new Thread(bullet).start();
+//        }
+//    }
+
+    public Vector<Bullet> getAiTankBullets() {
+        return aiTankBullets;
     }
 
     public static Vector<AiTank> getAiTanks() {
@@ -113,4 +126,7 @@ public class AiTank extends Tank implements Runnable{
             }
         }
     }
+
 }
+
+

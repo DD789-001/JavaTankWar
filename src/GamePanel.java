@@ -38,12 +38,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         g.setColor(Color.white);
         g.fillRect(0,620,1000,200);
         //================绘制游戏地图==================
-        //================绘制玩家得分==================
+        //================绘制玩家得分,被击中次数==================
         // 设置字体（Arial、加粗、24号）
         g.setColor(Color.black);
         g.setFont(new Font("Dialog", Font.BOLD, 24));
         String news = "玩家得分： " + playerRecord.getKillCount();
         g.drawString(news,10,640);
+        String news1 = "玩家被击中: " + playerRecord.getDeaths();
+        g.drawString(news1,10,670);
         //================绘制Ai坦克===================
         synchronized (AiTank.getAiTanks()) {
             Iterator<AiTank> it = AiTank.getAiTanks().iterator();
@@ -64,11 +66,29 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 if (aiTank.getLive()) {
                     //存活则绘制
                     drawTank(g,2,aiTank);
+                    //遍历aiTank的子弹集合，判断是否击中玩家坦克
+                    if (aiTank.getAiTankBullets() != null && !aiTank.getAiTankBullets().isEmpty()) {
+                        Iterator<Bullet> aiTankBullets = aiTank.getAiTankBullets().iterator();
+                        while (aiTankBullets.hasNext()) {
+                            Bullet bullet = aiTankBullets.next();
+                            //判断子弹是否击中玩家
+                            if (bullet.isHitTank(playerTank)) {playerTank.setAlive(false);}
+                            if (bullet.getLive()){
+                                drawBullet(g,2,bullet);
+                            } else{
+                                aiTankBullets.remove();
+                                System.out.println("子弹：x = " + bullet.getX()+ " " +" y = "+bullet.getY());
+                                System.out.println("AiTank的子弹被从集合中移除");
+                            }
+                        }
+                    }
                     if (img01 != null) {
                         g.drawImage(img01, aiTank.getX() - 10, aiTank.getY() - 10, 20, 20, this);
                     }
                 }else {
+                    //记录击杀得分
                     playerRecord.setKillCount(1);
+                    //在爆炸特效集合中添加死亡坦克的坐标
                     explosions.add(new Explosion(aiTank));
                     //死亡则移除
                     it.remove();
@@ -76,6 +96,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             }
         }
         //===================绘制玩家坦克=====================0
+        Explosion playerExplosion = new Explosion(playerTank);
+        //判断玩家是否死亡
+        if(!playerTank.getAlive()){
+            playerRecord.setDeaths(1);
+            System.out.println("玩家死亡！,玩家生命为" + playerTank.getAlive());
+            playerTank.setAlive(true);
+        }
         drawTank(g,1,playerTank);
         if (img != null) {
             g.drawImage(img, playerTank.getX() - 12, playerTank.getY() - 12, 25, 25, this);
@@ -90,7 +117,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                     drawBullet(g,1,bullet);
                 }else {
                     //若子弹生命为false则移除
-                    System.out.println("子弹移除了");
+                    System.out.println("玩家子弹移除了");
                     it.remove();
                 }
             }
@@ -106,6 +133,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             Explosion e = explosions.get(i);
             if (e.isAlive()) {
                 e.draw(g);
+                System.out.println("绘制了爆炸特效");
             } else {
                 explosions.remove(i--); // 移除已完成的爆炸
             }
@@ -175,7 +203,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 g.setColor(Color.YELLOW);
                 break;
             case 2:
-                g.setColor(Color.RED);
+                g.setColor(new Color(159, 14, 14));
                 break;
         }
         g.fillOval(bullet.getX() - 5,bullet.getY() - 5,5,5);
@@ -187,6 +215,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             AiTank.getAiTanks().add(aiTank);
             aiTank.getPlayTank(playerTank);
             new Thread(aiTank).start();
+            new Thread(new AiTankShot(aiTank)).start();
         }
     }
 

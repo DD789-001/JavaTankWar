@@ -2,9 +2,21 @@ import static java.lang.Thread.sleep;
 
 public class Bullet extends MoableObject implements Runnable{
     private int direction = 0;//设置子弹移动方向（默认北），东南西北
-    private final int speed = 1;//设置子弹速度
-    private final long time = 1;//子弹线程的休眠时间
+    private int speed = 1;//设置子弹速度
+    private long time = 1;//子弹线程的休眠时间
     private Boolean isLive = true;//子弹的生命，发生碰撞后为false
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public long getTime() {
+        return time;
+    }
 
     public Bullet(int x, int y){
         super(x,y);
@@ -52,16 +64,16 @@ public class Bullet extends MoableObject implements Runnable{
 
     public void OutOfBounds(){
         if(getX() < 0){
-            System.out.println("子弹销毁了");
+            System.out.println("子弹越界了");
             setLive(false);
         }else if(getX() > 1000){
-            System.out.println("子弹销毁了");
+            System.out.println("子弹越界了");
             setLive(false);
         }else if(getY() < 0){
-            System.out.println("子弹销毁了");
+            System.out.println("子弹越界了");
             setLive(false);
         }else if(getY() > 620){
-            System.out.println("子弹销毁了");
+            System.out.println("子弹越界了");
             setLive(false);
         }
     }
